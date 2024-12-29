@@ -39,9 +39,11 @@ public class BookedRoom {
     @Column(name = "total_guest")
     private int totalNumberOfGuests;// tổng số lượng khách
 
+    @Setter
     @Column(name = "confirmation_code")
     private String bookingConfirmationCode;// mã xác nhận khi đặt phòng
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)// Room chỉ được tải khi truy cập nó, giúp cải thiện hiệu suất
     @JoinColumn(name = "room_id") // khóa ngoại trỏ đến khóa chính của Room
     private Room room;
@@ -58,13 +60,5 @@ public class BookedRoom {
     public void setNumberOfChildren(int numberOfChildren) {
         this.numberOfChildren = numberOfChildren;
         calculateTotalNumberOfGuest();
-    }
-
-    public void setBookingConfirmationCode(String bookingConfirmationCode) {
-        this.bookingConfirmationCode = bookingConfirmationCode;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
     }
 }
