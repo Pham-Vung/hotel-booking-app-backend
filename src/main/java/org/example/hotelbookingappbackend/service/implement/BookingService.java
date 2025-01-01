@@ -10,6 +10,7 @@ import org.example.hotelbookingappbackend.service.interfaces.IBookingService;
 import org.example.hotelbookingappbackend.service.interfaces.IRoomService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -31,6 +32,11 @@ public class BookingService implements IBookingService {
     public String saveBooking(Long roomId, BookedRoom bookingRequest) {
         if (bookingRequest.getCheckOutDate().isBefore(bookingRequest.getCheckInDate())) {
             throw new InvalidBookingRequestException("Ngày nhận phòng phải nằm trước ngày trả phòng");
+        }
+
+        if (bookingRequest.getCheckOutDate().isBefore(LocalDate.now()) || bookingRequest.getCheckInDate().isBefore(LocalDate.now())) {
+            throw new InvalidBookingRequestException("Ngày nhận phòng hoặc ngày trả phòng không hợp lệ");
+
         }
         Room room = roomService.getRoomById(roomId).get();
         List<BookedRoom> existingBookings = room.getBookings();
