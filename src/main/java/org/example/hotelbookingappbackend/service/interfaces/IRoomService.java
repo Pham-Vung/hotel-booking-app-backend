@@ -25,5 +25,5 @@ public interface IRoomService {
 
     Optional<Room> getRoomById(Long roomId);
 
-    List<Room> getAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, String roomType);
+    List<Room> getAvailableRooms(java.time.LocalDate checkInDate, java.time.LocalDate checkOutDate, String roomType);
 }
