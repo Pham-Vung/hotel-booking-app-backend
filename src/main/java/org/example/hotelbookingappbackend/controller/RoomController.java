@@ -13,6 +13,7 @@ import org.example.hotelbookingappbackend.service.interfaces.IRoomService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +35,7 @@ public class RoomController {
     private final BookingService bookingService;
 
     @PostMapping("/add/new-room")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<RoomResponse> addNewRoom(
             @RequestParam("photo") MultipartFile photo,
             @RequestParam("roomType") String roomType,
@@ -57,7 +59,8 @@ public class RoomController {
         for (Room room : rooms) {
             byte[] photoByte = roomService.getRoomPhotoByRoomId(room.getId());
             if (photoByte != null && photoByte.length > 0) {
-                String base64Photo = Base64.encodeBase64String(photoByte);
+//                String base64Photo = Base64.encodeBase64String(photoByte);
+                String base64Photo = java.util.Base64.getEncoder().encodeToString(photoByte);
                 RoomResponse roomResponse = getRoomResponse(room);
                 roomResponse.setPhoto(base64Photo);
                 roomResponses.add(roomResponse);
@@ -67,12 +70,14 @@ public class RoomController {
     }
 
     @DeleteMapping("/delete/room/{roomId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteRoom(@PathVariable Long roomId) {
         roomService.deleteRoom(roomId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/update/{roomId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<RoomResponse> updateRoom(@PathVariable Long roomId,
                                                    @RequestParam(required = false) String roomType,
                                                    @RequestParam(required = false) BigDecimal roomPrice,
@@ -104,7 +109,8 @@ public class RoomController {
         for (Room room : availableRooms) {
             byte[] photoBytes = roomService.getRoomPhotoByRoomId(room.getId());
             if (photoBytes != null && photoBytes.length > 0) {
-                String photoBase64 = Base64.encodeBase64String(photoBytes);
+//                String photoBase64 = Base64.encodeBase64String(photoBytes);
+                String photoBase64 = java.util.Base64.getEncoder().encodeToString(photoBytes);
                 RoomResponse roomResponse = getRoomResponse(room);
                 roomResponse.setPhoto(photoBase64);
                 roomResponses.add(roomResponse);

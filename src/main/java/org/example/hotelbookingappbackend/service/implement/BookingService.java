@@ -38,7 +38,7 @@ public class BookingService implements IBookingService {
             throw new InvalidBookingRequestException("Ngày nhận phòng hoặc ngày trả phòng không hợp lệ");
 
         }
-        Room room = roomService.getRoomById(roomId).get();
+        Room room = roomService.getRoomById(roomId).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phòng"));
         List<BookedRoom> existingBookings = room.getBookings();
         boolean roomIsAvailable = roomIsAvailable(bookingRequest, existingBookings);
         if (roomIsAvailable) {

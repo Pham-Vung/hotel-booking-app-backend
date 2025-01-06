@@ -89,7 +89,8 @@ public class RoomService implements IRoomService {
 
     @Override
     public Optional<Room> getRoomById(Long roomId) {
-        return Optional.of(roomRepository.findById(roomId).get());
+        return Optional.of(roomRepository.findById(roomId).orElseThrow(() ->
+                new ResourceNotFoundException("Không tìm thấy phòng")));
     }
 
     @Override

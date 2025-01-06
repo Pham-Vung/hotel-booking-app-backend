@@ -11,6 +11,7 @@ import org.example.hotelbookingappbackend.service.interfaces.IBookingService;
 import org.example.hotelbookingappbackend.service.interfaces.IRoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class BookingController {
     private final IRoomService roomService;
 
     @GetMapping("/all-bookings")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<BookingResponse>> getAllBookings() {
         List<BookedRoom> bookings = bookingService.getAllBookings();
         List<BookingResponse> bookingResponses = new ArrayList<>();
@@ -46,8 +48,7 @@ public class BookingController {
     }
 
     @PostMapping("/room/{roomId}/booking")
-    public ResponseEntity<?> saveBooking(@PathVariable Long roomId,
-                                         @RequestBody BookedRoom bookingRequest) {
+    public ResponseEntity<?> saveBooking(@PathVariable Long roomId, @RequestBody BookedRoom bookingRequest) {
         try {
             String confirmationCode = bookingService.saveBooking(roomId, bookingRequest);
             return ResponseEntity.ok("Đã đặt phòng thành công!. Mã xác nhận đặt phòng của bạn là: " + confirmationCode);
@@ -62,7 +63,9 @@ public class BookingController {
     }
 
     private BookingResponse getBookingResponse(BookedRoom booking) {
-        Room theRoom = roomService.getRoomById(booking.getRoom().getId()).get();
+        Room theRoom = roomService.getRoomById(booking.getRoom()
+                        .getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phòng cần đặt"));
         RoomResponse room = new RoomResponse(theRoom.getId(), theRoom.getRoomType(), theRoom.getRoomPrice());
         return new BookingResponse(
                 booking.getBookingId(),
@@ -74,9 +77,7 @@ public class BookingController {
                 booking.getNumberOfChildren(),
                 booking.getTotalNumberOfGuests(),
                 booking.getBookingConfirmationCode(),
-                room
-        );
-
+                room);
     }
 
 }
